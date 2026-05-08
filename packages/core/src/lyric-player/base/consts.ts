@@ -10,7 +10,7 @@ export const MaskObsceneWordsMode = {
 	PartialMask: "partial-mask",
 } as const;
 
-/** 歌词中不雅用语的掩码模式类型，见 {@link MaskObsceneWordsMode} */
+/** 歌词中不雅用语的掩码模式枚举类型，见 {@link MaskObsceneWordsMode} */
 export type MaskObsceneWordsMode = ValueOf<typeof MaskObsceneWordsMode>;
 
 /**
@@ -23,7 +23,17 @@ export const LyricLineRenderMode = {
 } as const;
 
 /**
- * 歌词行的渲染模式类型，见 {@link LyricLineRenderMode}
+ * 歌词行的渲染模式枚举类型，见 {@link LyricLineRenderMode}
  * @internal
  */
 export type LyricLineRenderMode = ValueOf<typeof LyricLineRenderMode>;
+
+/** 布局对齐锚点 */
+export const LayoutAlignAnchor = {
+	Top: "top",
+	Center: "center",
+	Bottom: "bottom",
+} as const;
+
+/** 布局对齐锚点枚举类型，见 {@link LayoutAlignAnchor} */
+export type LayoutAlignAnchor = ValueOf<typeof LayoutAlignAnchor>;
