@@ -1,3 +1,13 @@
+## 0.4.2 (2026-07-09)
+
+### Patch Changes
+
+- **chore:** 修复 linter 警告 ([#539](https://github.com/amll-dev/applemusic-like-lyrics/pull/539))
+
+### Contributors
+
+- apoint123 [@apoint123](https://github.com/apoint123)
+
 ## 0.4.1 (2026-05-17)
 
 ### Patch Changes

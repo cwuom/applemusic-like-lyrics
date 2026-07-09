@@ -1,3 +1,18 @@
+## 0.5.2 (2026-07-09)
+
+### Patch Changes
+
+- **refactor(core):** 将点击相关事件和样式由歌词行上移至歌词组 ([#538](https://github.com/amll-dev/applemusic-like-lyrics/pull/538))
+- **chore(core):** 一些简单的代码优化避免样式重新计算 ([#540](https://github.com/amll-dev/applemusic-like-lyrics/pull/540))
+- **chore(core):** 简单优化一点Mesh着色器的代码 ([#558](https://github.com/amll-dev/applemusic-like-lyrics/pull/558))
+- **chore:** 修复 linter 警告 ([#539](https://github.com/amll-dev/applemusic-like-lyrics/pull/539))
+
+### Contributors
+
+- apoint123 [@apoint123](https://github.com/apoint123)
+- Linho
+- SteveXMH [@Steve-xmh](https://github.com/Steve-xmh)
+
 ## 0.5.1 (2026-05-17)
 
 ### Patch Changes
