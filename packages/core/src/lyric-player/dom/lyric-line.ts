@@ -588,6 +588,11 @@ export class LyricLineEl extends LyricLineBase {
 			"--amll-lp-emphasis-glow-min-opacity",
 			0,
 		);
+		const glowMaxOpacity = readCssNumber(
+			lyricPlayerStyle,
+			"--amll-lp-emphasis-glow-max-opacity",
+			0.85,
+		);
 		const glowRadiusBoost = readCssNumber(
 			lyricPlayerStyle,
 			"--amll-lp-emphasis-glow-radius-boost",
@@ -597,6 +602,11 @@ export class LyricLineEl extends LyricLineBase {
 			lyricPlayerStyle,
 			"--amll-lp-emphasis-glow-min-radius",
 			0,
+		);
+		const glowMaxRadius = readCssNumber(
+			lyricPlayerStyle,
+			"--amll-lp-emphasis-glow-max-radius",
+			0.45,
 		);
 
 		result = characterElements.flatMap((el, i, arr) => {
@@ -610,11 +620,11 @@ export class LyricLineEl extends LyricLineBase {
 					const transX = empEasing(x);
 					const glowProgress = empEasing(x);
 					const glowLevel = Math.min(
-						0.85,
+						glowMaxOpacity,
 						glowProgress * (blur * glowOpacityBoost + glowMinOpacity),
 					);
 					const glowRadius = Math.min(
-						0.45,
+						glowMaxRadius,
 						Math.max(glowMinRadius, blur * 0.3 * glowRadiusBoost),
 					);
 
