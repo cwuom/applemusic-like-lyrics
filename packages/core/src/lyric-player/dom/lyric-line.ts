@@ -36,6 +36,11 @@ const makeEmpEasing = (mid: number) => {
 	return (x: number) => (x < mid ? bezIn(beginNum(x)) : 1 - bezOut(endNum(x)));
 };
 
+function readCssNumber(styles: CSSStyleDeclaration, name: string, fallback: number) {
+	const value = Number.parseFloat(styles.getPropertyValue(name));
+	return Number.isFinite(value) ? value : fallback;
+}
+
 function generateFadeGradient(
 	width: number,
 	padding = 0,
@@ -572,6 +577,27 @@ export class LyricLineEl extends LyricLineBase {
 
 		const animateDu = Number.isFinite(du) ? du : 0;
 		const empEasing = makeEmpEasing(EMP_EASING_MID);
+		const lyricPlayerStyle = getComputedStyle(this.lyricPlayer.getElement());
+		const glowOpacityBoost = readCssNumber(
+			lyricPlayerStyle,
+			"--amll-lp-emphasis-glow-opacity-boost",
+			1,
+		);
+		const glowMinOpacity = readCssNumber(
+			lyricPlayerStyle,
+			"--amll-lp-emphasis-glow-min-opacity",
+			0,
+		);
+		const glowRadiusBoost = readCssNumber(
+			lyricPlayerStyle,
+			"--amll-lp-emphasis-glow-radius-boost",
+			1,
+		);
+		const glowMinRadius = readCssNumber(
+			lyricPlayerStyle,
+			"--amll-lp-emphasis-glow-min-radius",
+			0,
+		);
 
 		result = characterElements.flatMap((el, i, arr) => {
 			const wordDe = de + (du / 2.5 / anchorCharCount) * i;
@@ -582,7 +608,15 @@ export class LyricLineEl extends LyricLineBase {
 				.map((_, j) => {
 					const x = (j + 1) / ANIMATION_FRAME_QUANTITY;
 					const transX = empEasing(x);
-					const glowLevel = empEasing(x) * blur;
+					const glowProgress = empEasing(x);
+					const glowLevel = Math.min(
+						0.85,
+						glowProgress * (blur * glowOpacityBoost + glowMinOpacity),
+					);
+					const glowRadius = Math.min(
+						0.45,
+						Math.max(glowMinRadius, blur * 0.3 * glowRadiusBoost),
+					);
 
 					const mat = scaleMatrix4(createMatrix4(), 1 + transX * 0.1 * amount);
 					const offsetX = -transX * 0.03 * amount * (arr.length / 2 - i);
@@ -594,10 +628,7 @@ export class LyricLineEl extends LyricLineBase {
 							mat,
 							4,
 						)} translate(${offsetX}em, ${offsetY}em)`,
-						textShadow: `0 0 ${Math.min(
-							0.3,
-							blur * 0.3,
-						)}em rgba(255, 255, 255, ${glowLevel})`,
+						textShadow: `0 0 ${glowRadius}em rgba(255, 255, 255, ${glowLevel})`,
 					};
 				});
 
