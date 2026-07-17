@@ -205,6 +205,8 @@ export interface ComputeGroupPresentationInput {
 	isNonDynamic: boolean;
 	/** 是否启用模糊效果 */
 	enableBlur: boolean;
+	/** 非活跃歌词行的模糊强度倍率 */
+	blurAmount: number;
 	/** 是否正在进行滚动交互 */
 	isUserScrolling: boolean;
 	/** 是否处于紧凑布局环境，例如窄屏 */
@@ -241,6 +243,7 @@ export function computeGroupPresentation(
 		isPlaying,
 		isNonDynamic,
 		enableBlur,
+		blurAmount,
 		isUserScrolling,
 		isCompact,
 		interlude,
@@ -251,6 +254,7 @@ export function computeGroupPresentation(
 
 	const blurLevel = computeLineBlur({
 		enableBlur,
+		blurAmount,
 		isUserScrolling,
 		isActive,
 		itemIndex: groupIndex,
@@ -286,6 +290,8 @@ export function computeGroupPresentation(
 export interface ComputeLineBlurInput {
 	/** 是否启用了模糊效果 */
 	enableBlur: boolean;
+	/** 非活跃歌词行的模糊强度倍率 */
+	blurAmount: number;
 	/** 用户是否正在滚动 */
 	isUserScrolling: boolean;
 	/** 当前项是否活跃 */
@@ -315,6 +321,7 @@ export function computeLineBlur(input: ComputeLineBlurInput): number {
 		scrollToIndex,
 		latestIndex,
 		isCompact,
+		blurAmount,
 	} = input;
 
 	if (!enableBlur || isUserScrolling || isActive) {
@@ -329,5 +336,5 @@ export function computeLineBlur(input: ComputeLineBlurInput): number {
 		blurLevel += Math.abs(itemIndex - Math.max(scrollToIndex, latestIndex));
 	}
 
-	return isCompact ? blurLevel * 0.8 : blurLevel;
+	return (isCompact ? blurLevel * 0.8 : blurLevel) * blurAmount;
 }

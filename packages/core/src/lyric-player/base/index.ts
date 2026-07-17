@@ -79,6 +79,7 @@ export abstract class LyricPlayerBase
 	protected interludeDots: InterludeDots = new InterludeDots();
 	protected bottomLine: BottomLineEl = new BottomLineEl(this);
 	protected enableBlur = true;
+	protected blurAmount = 1;
 	protected enableScale = true;
 	protected maskObsceneWords: MaskObsceneWordsMode =
 		MaskObsceneWordsMode.Disabled;
@@ -280,6 +281,16 @@ export abstract class LyricPlayerBase
 	setEnableBlur(enable: boolean): void {
 		if (this.enableBlur === enable) return;
 		this.enableBlur = enable;
+		this.calcLayout();
+	}
+
+	/** 设置非活跃歌词行的模糊强度倍率 */
+	setBlurAmount(amount = 1): void {
+		const normalized = Number.isFinite(amount)
+			? Math.min(8, Math.max(0, amount))
+			: 1;
+		if (this.blurAmount === normalized) return;
+		this.blurAmount = normalized;
 		this.calcLayout();
 	}
 
@@ -660,6 +671,7 @@ export abstract class LyricPlayerBase
 				isPlaying: this.timelineState.isPlaying,
 				isNonDynamic: this.isNonDynamic,
 				enableBlur: this.enableBlur,
+				blurAmount: this.blurAmount,
 				isUserScrolling: this.scrollState.isUserScrolling,
 				isCompact: window.innerWidth <= 1024,
 				interlude,
@@ -687,6 +699,7 @@ export abstract class LyricPlayerBase
 		const bottomIndex = this.currentLyricGroups.length;
 		const finalBottomBlur = computeLineBlur({
 			enableBlur: this.enableBlur,
+			blurAmount: this.blurAmount,
 			isUserScrolling: this.scrollState.isUserScrolling,
 			isActive: isBottomFocused,
 			itemIndex: bottomIndex,
