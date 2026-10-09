@@ -42,6 +42,18 @@ export class InterludeDots implements HasElement, Disposable {
 		this.update();
 	}
 	setInterlude(interlude?: [number, number]): void {
+		const current = this.currentInterlude;
+		// calcLayout 每次都会以「当前时间」作为起点重新下发同一段间奏（暂停/恢复、
+		// resize、滚动都会触发），沿用已有起点只校正时钟，否则呼吸动画会从零重播
+		if (
+			interlude &&
+			current &&
+			current[1] === interlude[1] &&
+			interlude[0] >= current[0]
+		) {
+			this.currentTime = interlude[0];
+			return;
+		}
 		this.currentInterlude = interlude;
 		this.currentTime = interlude?.[0] ?? 0;
 		if (interlude) {
@@ -59,8 +71,9 @@ export class InterludeDots implements HasElement, Disposable {
 		this.element.classList.add(styles.playing);
 	}
 	update(delta = 0): void {
-		if (!this.playing) return;
-		this.currentTime += delta;
+		// 暂停只冻结呼吸时钟，位置仍要写入：暂停/加载中完成的布局若被跳过，
+		// 间奏点会停在首次布局（尺寸未就绪）算出的顶部位置
+		if (this.playing) this.currentTime += delta;
 		let curStyle = "";
 
 		curStyle += `transform:translate(${this.left.toFixed(
