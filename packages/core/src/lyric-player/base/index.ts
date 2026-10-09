@@ -77,6 +77,13 @@ export abstract class LyricPlayerBase
 		overscanPx: 300,
 	};
 	protected interludeDots: InterludeDots = new InterludeDots();
+	/**
+	 * 间奏点紧跟其后的歌词组。歌词行走带延迟的弹簧，间奏点若直接写入布局终点，
+	 * 滚动过程中会先跳到终点压住上一行；改为每帧跟随该组弹簧的当前位置
+	 */
+	private interludeDotsAnchor?: LyricLineGroupBase;
+	private interludeDotsX = 0;
+	private interludeDotsGap = 0;
 	protected bottomLine: BottomLineEl = new BottomLineEl(this);
 	protected enableBlur = true;
 	protected blurAmount = 1;
@@ -464,6 +471,7 @@ export abstract class LyricPlayerBase
 		this.currentLyricGroups = [];
 
 		this.interludeDots.setInterlude(undefined);
+		this.interludeDotsAnchor = undefined;
 		this.timelineState.hotGroups.clear();
 		this.timelineState.bufferedGroups.clear();
 
@@ -579,6 +587,7 @@ export abstract class LyricPlayerBase
 			isNextDuet = interlude.isNextDuet;
 		} else {
 			this.interludeDots.setInterlude(undefined);
+			this.interludeDotsAnchor = undefined;
 		}
 
 		const fontSize = this.baseFontSize || 24;
@@ -650,7 +659,25 @@ export abstract class LyricPlayerBase
 					targetX = this.size[0] - this.layoutState.interludeDotsSize[0];
 				}
 
-				this.interludeDots.setTransform(targetX, curPos);
+				const dotsTop = curPos;
+				curPos += this.layoutState.interludeDotsSize[1];
+				curPos += dotMargin;
+
+				const isNewAnchor = this.interludeDotsAnchor !== group;
+				this.interludeDotsAnchor = group;
+				this.interludeDotsX = targetX;
+				this.interludeDotsGap = curPos - dotsTop;
+				// 首次出现时行还没动，直接放到行弹簧的当前位置之上，避免从旧位置滑入
+				if (isNewAnchor || force || !this.getEnableSpring()) {
+					const anchorTop =
+						force || !this.getEnableSpring()
+							? curPos
+							: group.posY.getCurrentPosition();
+					this.interludeDots.setTransform(
+						targetX,
+						anchorTop - this.interludeDotsGap,
+					);
+				}
 
 				if (interlude) {
 					this.interludeDots.setInterlude([
@@ -658,8 +685,6 @@ export abstract class LyricPlayerBase
 						interlude.endTime,
 					]);
 				}
-				curPos += this.layoutState.interludeDotsSize[1];
-				curPos += dotMargin;
 			}
 
 			const presentation = computeGroupPresentation({
@@ -785,7 +810,17 @@ export abstract class LyricPlayerBase
 
 	update(delta = 0): void {
 		this.bottomLine.update(delta / 1000);
+		this.followInterludeDotsAnchor();
 		this.interludeDots.update(delta);
+	}
+
+	private followInterludeDotsAnchor(): void {
+		const anchor = this.interludeDotsAnchor;
+		if (!anchor || !this.getEnableSpring()) return;
+		this.interludeDots.setTransform(
+			this.interludeDotsX,
+			anchor.posY.getCurrentPosition() - this.interludeDotsGap,
+		);
 	}
 
 	protected onResize(): void {}

@@ -216,17 +216,19 @@ export class DomLyricPlayer extends LyricPlayerBase {
 
 	override update(delta = 0): void {
 		if (!this.timelineState.initialLayoutFinished) return;
+		// 先推进行弹簧，间奏点在 super.update 里读取的才是本帧位置
+		if (this.isPageVisible) {
+			const deltaS = delta / 1000;
+			for (const group of this.currentLyricGroups) {
+				group.update(deltaS);
+			}
+		}
 		super.update(delta);
 		if (!this.supportMaskImage) {
 			this.element.style.setProperty(
 				"--amll-player-time",
 				`${this.timelineState.currentTime}`,
 			);
-		}
-		if (!this.isPageVisible) return;
-		const deltaS = delta / 1000;
-		for (const group of this.currentLyricGroups) {
-			group.update(deltaS);
 		}
 	}
 
