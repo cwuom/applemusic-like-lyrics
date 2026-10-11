@@ -38,9 +38,9 @@
 	padding: 0.2em;
 	margin: -0.2em;
 
-	contain: layout style paint;
-	content-visibility: auto;
-	contain-intrinsic-size: auto 40px;
+	/* 离屏歌词由视口虚拟化控制，行框不能裁切长音缩放和辉光 */
+	contain: layout style;
+	content-visibility: visible;
 	backface-visibility: hidden;
 	transform-origin: left;
 	will-change: transform, filter, opacity;
