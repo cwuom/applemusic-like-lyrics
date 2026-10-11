@@ -66,16 +66,16 @@ export abstract class LyricLineBase extends EventTarget implements Disposable {
 	 *
 	 * 果子在对辉光效果的解释是一种强调（emphasized）效果
 	 *
-	 * 条件是一个单词时长大于等于 1s 且长度小于等于 7
+	 * 单词达到触发时长且长度小于等于 7，默认触发时长为 1s
 	 *
 	 * @param word 单词
 	 * @returns 是否可以应用强调辉光效果
 	 */
-	static shouldEmphasize(word: LyricWord): boolean {
-		if (isCJK(word.word)) return word.endTime - word.startTime >= 1000;
+	static shouldEmphasize(word: LyricWord, thresholdMs = 1000): boolean {
+		if (isCJK(word.word)) return word.endTime - word.startTime >= thresholdMs;
 
 		return (
-			word.endTime - word.startTime >= 1000 &&
+			word.endTime - word.startTime >= thresholdMs &&
 			word.word.trim().length <= 7 &&
 			word.word.trim().length > 1
 		);

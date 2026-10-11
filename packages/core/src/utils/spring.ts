@@ -59,6 +59,10 @@ export class Spring {
 		);
 	}
 	setPosition(targetPosition: number): void {
+		// 强制重排后，旧的延迟目标不能再把歌词拉回屏幕外
+		this.queuePosition = undefined;
+		this.queueParams = undefined;
+		this.currentTime = 0;
 		this.targetPosition = targetPosition;
 		this.currentPosition = targetPosition;
 		this.currentSolver = () => this.targetPosition;

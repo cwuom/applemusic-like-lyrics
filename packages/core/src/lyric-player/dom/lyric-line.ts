@@ -465,9 +465,14 @@ export class LyricLineEl extends LyricLineBase {
 			} as LyricWord,
 		);
 
-		let emp = chunk.some((word) => LyricLineBase.shouldEmphasize(word));
+		const thresholdMs = readCssNumber(
+			getComputedStyle(this.lyricPlayer.getElement()),
+			"--amll-lp-emphasis-threshold-ms",
+			1000,
+		);
+		let emp = chunk.some((word) => LyricLineBase.shouldEmphasize(word, thresholdMs));
 		if (!isCJK(merged.word)) {
-			emp = emp || LyricLineBase.shouldEmphasize(merged);
+			emp = emp || LyricLineBase.shouldEmphasize(merged, thresholdMs);
 		}
 
 		const wrapperWordEl = document.createElement("span");
